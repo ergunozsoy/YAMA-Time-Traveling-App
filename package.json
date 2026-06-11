@@ -1,0 +1,21 @@
+{
+  "name": "yama-time-traveling",
+  "version": "1.0.0",
+  "description": "YAMA Time Traveling is an experimental digital humanities project that transforms photographs into immersive historical experiences.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.104.1",
+    "@google/genai": "^2.8.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "multer": "^2.1.1"
+  }
+}

@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YAMA Time Traveling</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* Design Tokens */
+    :root {
+      --bg-color: #0b0f19;
+      --bg-color-alt: #070a10;
+      --card-bg: #141b2b;
+      --card-bg-hover: #1b2438;
+      --accent-gold: #dfb257;
+      --accent-gold-hover: #f2c96c;
+      --accent-gold-light: rgba(223, 178, 87, 0.05);
+      --accent-gold-dim: #a3823f;
+      --border-color: #24304a;
+      --border-color-hover: #35476d;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --shadow-normal: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.6);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Base Layout */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-sans);
+      background-color: var(--bg-color);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 20px;
+      flex: 1;
+      box-sizing: border-box;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .header-decor {
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+
+    @keyframes rotateCompass {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .time-compass {
+      animation: rotateCompass 80s linear infinite;
+      opacity: 0.85;
+    }
+
+    .title {
+      font-family: var(--font-serif);
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 10px 0;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-style: italic;
+      color: var(--accent-gold);
+      margin: 0 0 20px 0;
+      letter-spacing: 1px;
+    }
+
+    .intro {
+      max-width: 700px;
+      margin: 0 auto;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    /* Photo Upload Container */
+    .upload-container {
+      max-width: 650px;
+      margin: 0 auto 40px auto;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--border-color);
+      background-color: var(--bg-color-alt);
+      padding: 45px 30px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .upload-area:hover, .upload-area.drag-over {
+      border-color: var(--accent-gold);
+      background-color: rgba(223, 178, 87, 0.02);
+      box-shadow: 0 0 15px rgba(223, 178, 87, 0.05);
+    }
+
+    .upload-icon {
+      color: var(--text-muted);
+      margin-bottom: 15px;
+      transition: var(--transition);
+    }
+
+    .upload-area:hover .upload-icon {
+      color: var(--accent-gold);
+      transform: translateY(-4px);
+    }
+
+    .upload-title {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      color: var(--text-primary);
+      margin: 0 0 8px 0;
+    }
+
+    .upload-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    /* Image Preview Styling */
+    .preview-container {
+      text-align: center;
+      width: 100%;
+    }
+
+    .vintage-photo-frame {
+      background-color: #eae3d2;
+      padding: 16px 16px 40px 16px;
+      border-radius: 4px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+      border: 1px solid #d4cbb3;
+      display: inline-block;
+      max-width: 90%;
+      margin: 10px auto;
+      transform: rotate(-1deg);
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+
+    .vintage-photo-frame:hover {
+      transform: rotate(0deg) scale(1.02);
+    }
+
+    .vintage-photo-frame img {
+      max-height: 380px;
+      width: auto;
+      max-width: 100%;
+      display: block;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      filter: sepia(0.15) contrast(1.05);
+    }
+
+    .frame-label {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 13px;
+      color: #5d5643;
+      text-align: center;
+      margin-top: 15px;
+      letter-spacing: 2px;
+      font-weight: 600;
+      border-top: 1px dotted #beb59e;
+      padding-top: 8px;
+    }
+
+    /* Buttons */
+    .action-container {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .btn-primary {
+      background-color: var(--accent-gold);
+      color: #070a10;
+      border: none;
+      padding: 16px 36px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-sans);
+      box-shadow: 0 4px 15px rgba(223, 178, 87, 0.25);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--accent-gold-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(223, 178, 87, 0.35);
+    }
+
+    .btn-primary:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      background-color: #1e2638;
+      color: #475569;
+      cursor: not-allowed;
+      box-shadow: none;
+      border: 1px solid #1c2537;
+    }
+
+    .btn-primary svg {
+      transition: transform 0.3s ease;
+    }
+
+    .btn-primary:hover:not(:disabled) svg {
+      transform: translateX(4px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font-sans);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent-gold-dim);
+      color: var(--accent-gold);
+      background-color: var(--accent-gold-light);
+    }
+
+    /* Section Divider */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      margin: 60px 0 40px 0;
+    }
+
+    .section-divider .line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border-color) 30%, var(--border-color) 70%, transparent);
+    }
+
+    .section-divider .divider-text {
+      font-family: var(--font-serif);
+      color: var(--accent-gold);
+      font-size: 1.15rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      padding: 0 24px;
+    }
+
+    /* Cards Layout */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .analysis-section {
+      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px; /* increased gap for better spacing */
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .title {
+        font-size: 2.2rem; /* slightly smaller on mobile */
+      }
+    }
+
+    /* Individual Card styling */
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 32px; /* increased padding for better spacing */
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(to right, var(--accent-gold-dim), var(--accent-gold), var(--accent-gold-dim));
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-color-hover);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 14px;
+    }
+
+    .card-icon {
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card h3 {
+      font-family: var(--font-serif);
+      font-size: 1.6rem; /* larger heading for readability */
+      margin: 0;
+      color: var(--text-primary);
+      letter-spacing: 0.5px;
+    }
+
+    .card-content {
+      font-size: 1.1rem; /* larger body text */
+      line-height: 1.7;
+      color: var(--text-secondary);
+      flex: 1;
+    }
+
+    .card-content p {
+      margin: 0 0 16px 0;
+    }
+
+    .card-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .narrative-text {
+      font-style: italic;
+      position: relative;
+      padding-left: 16px;
+      border-left: 3px solid var(--accent-gold-dim);
+    }
+
+    /* Historian Mode Inner sections */
+    .historian-section {
+      margin-bottom: 20px;
+    }
+
+    .historian-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .historian-subtitle {
+      font-family: var(--font-serif);
+      font-size: 1.2rem; /* larger subtitle */
+      font-weight: 600;
+      color: var(--accent-gold);
+      margin-bottom: 12px; /* more spacing */
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .historian-subtitle::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background-color: var(--accent-gold);
+      border-radius: 50%;
+    }
+
+    .historian-section p {
+      font-size: 1rem; /* slightly larger for readability */
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    /* Skeleton Loading State */
+    .skeleton-line {
+      height: 12px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.03) 75%);
+      background-size: 200% 100%;
+      animation: loadingSkeleton 1.6s infinite linear;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
+    .skeleton-line.short {
+      width: 65%;
+    }
+
+    @keyframes loadingSkeleton {
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 80px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Header -->
+    <header class="header">
+      <div class="header-decor">
+        <svg viewBox="0 0 100 100" width="70" height="70" class="time-compass">
+          <circle cx="50" cy="50" r="45" stroke="var(--accent-gold)" stroke-width="1.5" fill="none" stroke-dasharray="3,3" />
+          <circle cx="50" cy="50" r="38" stroke="var(--accent-gold)" stroke-width="1" fill="none" opacity="0.5" />
+          <line x1="50" y1="12" x2="50" y2="18" stroke="var(--accent-gold)" stroke-width="2" />
+          <line x1="50" y1="88" x2="50" y2="82" stroke="var(--accent-gold)" stroke-width="2" />
+          <line x1="12" y1="50" x2="18" y2="50" stroke="var(--accent-gold)" stroke-width="2" />
+          <line x1="88" y1="50" x2="82" y2="50" stroke="var(--accent-gold)" stroke-width="2" />
+          <line x1="50" y1="50" x2="50" y2="28" stroke="var(--accent-gold)" stroke-width="2" stroke-linecap="round" />
+          <line x1="50" y1="50" x2="66" y2="50" stroke="var(--accent-gold)" stroke-width="1.5" stroke-linecap="round" />
+          <circle cx="50" cy="50" r="3" fill="var(--accent-gold)" />
+        </svg>
+      </div>
+      <h1 class="title">YAMA Time Traveling</h1>
+      <p class="subtitle">Explore possible stories hidden in historic photographs</p>
+      <p class="intro">Upload a historic photograph and explore the possible people, places, objects, atmosphere, and context it may reveal.</p>
+    </header>
+
+    <!-- Upload Section -->
+    <div class="upload-container">
+      <div class="upload-area" id="dropZone">
+        <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
+        
+        <div class="upload-prompt" id="uploadPrompt">
+          <svg class="upload-icon" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+          </svg>
+          <p class="upload-title">Drag & Drop Your Photograph</p>
+          <p class="upload-subtitle">or click to browse local files (JPG, PNG, WebP)</p>
+        </div>
+
+        <div class="preview-container" id="previewContainer" style="display: none;">
+          <div class="vintage-photo-frame">
+            <img id="preview" alt="Historical photo preview">
+            <div class="frame-label">TEMPORAL SOURCE ANCHOR</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Area -->
+      <div class="action-container">
+        <button id="timeTravelBtn" class="btn-primary" onclick="beginTimeTravel()" disabled>
+          <span>Begin Time Travel</span>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </button>
+        <button id="changePhotoBtn" class="btn-secondary" style="display: none;">Select Different Photograph</button>
+      </div>
+    </div>
+
+    <!-- Analysis Section -->
+    <div id="analysis" class="analysis-section" style="display: none;">
+      
+      <div class="section-divider">
+        <div class="line"></div>
+        <span class="divider-text">Temporal Analysis Report</span>
+        <div class="line"></div>
+      </div>
+
+      <div class="grid">
+        
+        <!-- 1. Observe -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </div>
+            <h3>1. Observe</h3>
+          </div>
+          <div class="card-content" id="observeContent">
+            <!-- Dynamic placeholder -->
+          </div>
+        </div>
+
+        <!-- 2. Decode -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <h3>2. Decode</h3>
+          </div>
+          <div class="card-content" id="decodeContent">
+            <!-- Dynamic placeholder -->
+          </div>
+        </div>
+
+        <!-- 3. Reconstruct -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+            </div>
+            <h3>3. Reconstruct</h3>
+          </div>
+          <div class="card-content" id="reconstructContent">
+            <!-- Dynamic placeholder -->
+          </div>
+        </div>
+
+        <!-- 4. Atmosphere -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                <path d="M12 9v2"></path>
+                <path d="M16.24 7.76l-1.42 1.42"></path>
+                <path d="M19 12h-2"></path>
+                <path d="M16.24 16.24l-1.42-1.42"></path>
+                <path d="M12 15v2"></path>
+                <path d="M7.76 16.24l1.42-1.42"></path>
+                <path d="M5 12h2"></path>
+                <path d="M7.76 7.76l1.42 1.42"></path>
+              </svg>
+            </div>
+            <h3>4. Atmosphere</h3>
+          </div>
+          <div class="card-content" id="atmosphereContent">
+            <!-- Dynamic placeholder -->
+          </div>
+        </div>
+
+        <!-- 5. Time Travel Narrative -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+            </div>
+            <h3>5. Time Travel Narrative</h3>
+          </div>
+          <div class="card-content" id="narrativeContent">
+            <!-- Dynamic placeholder -->
+          </div>
+        </div>
+
+        <!-- 6. Historian Mode -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
+              </svg>
+            </div>
+            <h3>6. Historian Mode</h3>
+          </div>
+          <div class="card-content" id="historianContent">
+            <!-- Dynamic placeholder -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>© 2026 Ergün Özsoy • YAMA Time Traveling</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // DOM Elements
+    const photoInput = document.getElementById("photoInput");
+    const dropZone = document.getElementById("dropZone");
+    const uploadPrompt = document.getElementById("uploadPrompt");
+    const previewContainer = document.getElementById("previewContainer");
+    const preview = document.getElementById("preview");
+    const timeTravelBtn = document.getElementById("timeTravelBtn");
+    const changePhotoBtn = document.getElementById("changePhotoBtn");
+    const templateSelect = document.getElementById("templateSelect");
+    const analysisSection = document.getElementById("analysis");
+    const templateSelector = document.getElementById("templateSelector");
+
+    // Dynamic Target Containers
+    const observeContent = document.getElementById("observeContent");
+    const decodeContent = document.getElementById("decodeContent");
+    const reconstructContent = document.getElementById("reconstructContent");
+    const atmosphereContent = document.getElementById("atmosphereContent");
+    const narrativeContent = document.getElementById("narrativeContent");
+    const historianContent = document.getElementById("historianContent");
+
+    // Structured data schema for the Historical‑Thinking Engine (four curated templates)
+    const analysisTemplates = {
+      architecture: {
+        observe: [
+          "A grand stone façade of a historic cathedral with towering arches and stained‑glass windows.",
+          "Intricate stone carvings depict biblical scenes on the façade."
+        ],
+        decode: [
+          "The Gothic pointed arches and ribbed vaults indicate a 13th‑century European style.",
+          "Stained‑glass colors suggest a Catholic liturgical context."
+        ],
+        reconstruct: [
+          "The building likely served as a major pilgrimage site during the High Middle Ages.",
+          "Its location on a hill implies a defensive as well as religious function."
+        ],
+        atmosphere: [
+          "Cool stone walls, echoing chants, faint incense smoke drifting through the nave.",
+          "A soft light filtered through the vibrant stained glass."
+        ],
+        narrative: "\\\"You step into the vaulted nave, the echo of distant chants filling the cool stone air. Light fractures through stained glass, painting the floor with colors of sunrise. A pilgrim pauses, eyes lifted to the heavens as the world outside seems far away.\\\"",
+        historianMode: {
+          observe: "Gothic cathedral with pointed arches, stained glass, stone carvings.",
+          infer: "Built in the 13th‑14th century for Catholic worship, likely a regional pilgrimage destination.",
+          unknown: "Exact founding date, patron, and interior frescoes are not discernible."
+        }
+      },
+      portrait: {
+        observe: [
+          "A black‑and‑white studio portrait of a middle‑aged woman, seated, hands folded on her lap.",
+          "The background features a simple fabric backdrop with subtle lighting gradients."
+        ],
+        decode: [
+          "The formal pose and clothing suggest a 1920s‑30s studio photograph.",
+          "The soft focus and vignette are characteristic of early silver‑gelatin prints."
+        ],
+        reconstruct: [
+          "The sitter may be a member of the emerging middle class, possibly a schoolteacher or shopkeeper.",
+          "The portrait was likely taken to commemorate a personal milestone, such as a marriage or retirement."
+        ],
+        atmosphere: [
+          "Warm studio lighting creates gentle shadows, a faint scent of chemicals in the air.",
+          "A quiet, contemplative mood pervades the scene."
+        ],
+        narrative: "\\\"She sits upright, a faint smile playing on her lips, as if recalling the bustling market she left that morning. The studio’s soft glow catches the glint of a pearl brooch, a silent testament to a life lived between tradition and change.\\\"",
+        historianMode: {
+          observe: "Studio portrait, woman, 1920s‑30s aesthetic.",
+          infer: "Reflects early‑20th‑century middle‑class aspirations and gender norms.",
+          unknown: "Identity, exact date, and photographer remain unknown."
+        }
+      },
+      streetScene: {
+        observe: [
+          "A bustling cobblestone street filled with market stalls, horse‑drawn carts, and pedestrians.",
+          "Shopfronts display hand‑woven textiles and metalware."
+        ],
+        decode: [
+          "The horse‑drawn vehicles and clothing indicate a late‑19th‑century urban setting.",
+          "The architecture resembles Ottoman‑influenced public buildings."
+        ],
+        reconstruct: [
+          "The scene captures a Saturday market day, where locals barter goods and exchange news.",
+          "It likely took place near a city gate, serving as a commercial hub."
+        ],
+        atmosphere: [
+          "Clamor of traders shouting, clatter of cart wheels, distant call to prayer echoing.",
+          "A mixture of aromas: spices, leather, and fresh bread."
+        ],
+        narrative: "\\\"Amid the clatter of wheels and the chatter of merchants, a child darts between stalls, clutching a caramel‑coated apple. The air swirls with the scent of cumin and the distant toll of the minaret, weaving a tapestry of daily life in a thriving port city.\\\"",
+        historianMode: {
+          observe: "Cobblestone market street, horse‑drawn carts, Ottoman‑style shopfronts.",
+          infer: "Late 19th‑century Ottoman urban commerce, likely a port city market.",
+          unknown: "Exact city, date, and names of vendors are not documented."
+        }
+      },
+      document: {
+        observe: [
+          "A sepia‑toned scanned page showing handwritten notes, a map inset, and a marginal sketch of a ship.",
+          "The paper shows watermarks and faint ink bleed."
+        ],
+        decode: [
+          "The cursive script matches early 19th‑century Ottoman Turkish handwriting.",
+          "The map’s cartographic style points to a naval chart from the 1820s."
+        ],
+        reconstruct: [
+          "The document appears to be a captain’s log describing a voyage from Istanbul to Alexandria.",
+          "It likely records weather conditions, cargo inventory, and encounters with coastal towns."
+        ],
+        atmosphere: [
+          "A faint smell of aged paper, the quiet rustle of turning pages.",
+          "The marginal sketch suggests an imaginative pause by the author."
+        ],
+        narrative: "\\\"The captain inked his thoughts beneath a storm‑blackened sky, the ship’s prow cutting through restless waves. Each entry breathes the tension of trade and the hope of safe harbor.\\\"",
+        historianMode: {
+          observe: "Handwritten Ottoman‑Turkish log, map, ship sketch.",
+          infer: "Early 19th‑century naval document, likely a merchant vessel’s captain’s journal.",
+          unknown: "Exact author, precise dates, and the fate of the voyage remain unknown."
+        }
+      }
+    };
+
+    // Click trigger for file input
+    const triggerFileSelect = () => photoInput.click();
+
+    dropZone.addEventListener("click", () => {
+      if (previewContainer.style.display === "none") {
+        triggerFileSelect();
+      }
+    });
+
+    changePhotoBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      triggerFileSelect();
+    });
+
+    // File input handler
+    photoInput.addEventListener("change", function() {
+      const file = this.files[0];
+      if (file) {
+        handleFile(file);
+      }
+    });
+
+    // Unified Drag & Drop event handling
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, () => dropZone.classList.add("drag-over"), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, () => dropZone.classList.remove("drag-over"), false);
+    });
+
+    dropZone.addEventListener("drop", (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        photoInput.files = files;
+        handleFile(files[0]);
+      }
+    });
+
+    // Handle uploaded file visualization
+    function handleFile(file) {
+      if (file && file.type.startsWith("image/")) {
+        preview.src = URL.createObjectURL(file);
+        
+        previewContainer.style.display = "block";
+        uploadPrompt.style.display = "none";
+        
+        timeTravelBtn.disabled = false;
+        changePhotoBtn.style.display = "inline-block";
+        
+        // Hide analysis when uploading a new photo to prompt "traveling" again
+        analysisSection.style.display = "none";
+      }
+    }
+
+    // Render loading animation skeletons in all card slots
+    function showSkeletons() {
+      const skeletonHTML = `
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
+      `;
+      
+      observeContent.innerHTML = skeletonHTML;
+      decodeContent.innerHTML = skeletonHTML;
+      reconstructContent.innerHTML = skeletonHTML;
+      atmosphereContent.innerHTML = skeletonHTML;
+      narrativeContent.innerHTML = skeletonHTML;
+      
+      historianContent.innerHTML = `
+        <div class="historian-section">
+          <div class="historian-subtitle">What we know</div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+        <div class="historian-section" style="margin-top: 20px;">
+          <div class="historian-subtitle">What we do not know</div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+      `;
+    }
+
+    // Populate actual data into the DOM (called after loading delay or future API response)
+    function renderAnalysis(data) {
+      // 1. Observe
+      observeContent.innerHTML = data.observe.map(p => `<p>${p}</p>`).join('');
+
+      // 2. Decode
+      decodeContent.innerHTML = data.decode.map(p => `<p>${p}</p>`).join('');
+
+      // 3. Reconstruct
+      reconstructContent.innerHTML = data.reconstruct.map(p => `<p>${p}</p>`).join('');
+
+      // 4. Atmosphere
+      atmosphereContent.innerHTML = data.atmosphere.map(p => `<p>${p}</p>`).join('');
+
+      // 5. Time Travel Narrative
+      narrativeContent.innerHTML = `<p class="narrative-text">${data.narrative}</p>`;
+
+      // 6. Historian Mode – three clearly separated sections
+      historianContent.innerHTML = `
+        <div class="historian-section">
+          <div class="historian-subtitle">What we observe</div>
+          <p>${data.historianMode.observe}</p>
+        </div>
+        <div class="historian-section">
+          <div class="historian-subtitle">What we can infer</div>
+          <p>${data.historianMode.infer}</p>
+        </div>
+        <div class="historian-section">
+          <div class="historian-subtitle">What we cannot know</div>
+          <p>${data.historianMode.unknown}</p>
+        </div>
+      `;
+    }
+
+   // Scroll to analysis results, show placeholders, and load content
+async function beginTimeTravel() {
+    const fileInput = document.getElementById("photoInput") || document.querySelector('input[type="file"]');
+    
+    if (!fileInput || !fileInput.files[0]) {
+        alert("Lütfen önce bir fotoğraf yükleyin!");
+        return;
+    }
+
+    // Arayüzü hazırlama ve yükleme animasyonlarını başlatma
+    analysisSection.style.display = "block";
+    analysisSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    showSkeletons();
+
+    // Fotoğrafı paketleyip sunucuya göndermek için hazırlıyoruz
+    const formData = new FormData();
+    formData.append("photo", fileInput.files[0]);
+
+    try {
+        // server.js üzerindeki canlı API ucumuza resmi gönderiyoruz
+        const response = await fetch("/api/analyze", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) throw new Error("Sunucu analiz talebine olumsuz yanıt verdi.");
+
+        const result = await response.json();
+        
+        // Gemini'dan dönen gerçek, canlı tarihsel veriyi ekrana basıyoruz
+        renderAnalysis(result);
+
+    } catch (error) {
+        console.error("Zaman yolculuğu hatası:", error);
+        alert("Zaman akışında bir kopma yaşandı! Sunucu terminalini veya API anahtarınızı kontrol edin.");
+    }
+}
+</script>
+
+</body>
+</html>
