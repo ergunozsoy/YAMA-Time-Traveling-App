@@ -527,6 +527,24 @@
     .hist-thumb:hover{border-color:var(--accent-gold);transform:translateY(-2px);}
     .hist-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
     .hist-thumb .hist-lang{position:absolute;bottom:4px;right:4px;font-size:.6rem;font-weight:700;letter-spacing:.04em;color:#0b0f19;background:var(--accent-gold);border-radius:4px;padding:1px 4px;}
+
+    /* ---- İki Kanat (Fan köşesi) ---- */
+    .fan-corner{max-width:1100px;margin:46px auto 30px;padding:0 20px;}
+    .fan-head{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;border-top:1px solid var(--border-color);padding:24px 4px 18px;}
+    .fan-head h2{font-family:var(--font-serif);color:var(--text-primary);font-size:1.45rem;margin:0;display:flex;align-items:center;gap:11px;}
+    .fan-head .fan-ico{color:var(--accent-gold);}
+    .fan-chev{color:var(--accent-gold);transition:transform .3s;font-size:1rem;}
+    .fan-corner.open .fan-chev{transform:rotate(180deg);}
+    .fan-body{display:none;padding:8px 4px 0;}
+    .fan-corner.open .fan-body{display:block;}
+    .fan-motto{font-family:var(--font-serif);font-style:italic;font-size:1.16rem;line-height:1.5;color:var(--text-secondary);border-left:3px solid var(--accent-gold);padding:4px 0 4px 16px;margin:0 0 28px;}
+    .fan-wings{display:grid;grid-template-columns:1fr 1fr;gap:34px;}
+    @media(max-width:680px){.fan-wings{grid-template-columns:1fr;}}
+    .wing-title{font-family:var(--font-serif);color:var(--accent-gold);font-size:1.08rem;letter-spacing:.4px;margin:0 0 16px;display:flex;align-items:center;gap:9px;}
+    .wing-item{margin:0 0 16px;}
+    .wing-item .wi-name{color:var(--text-primary);font-weight:600;}
+    .wing-item .wi-year{color:var(--accent-gold);font-size:.82rem;margin-left:5px;}
+    .wing-item .wi-desc{display:block;color:var(--text-secondary);font-size:.96rem;line-height:1.55;margin-top:3px;}
   </style>
 </head>
 <body>
@@ -716,6 +734,20 @@
       </div>
       <div class="history-strip" id="historyStrip"></div>
     </div>
+
+    <section class="fan-corner" id="fanCorner">
+      <div class="fan-head" onclick="document.getElementById('fanCorner').classList.toggle('open')">
+        <h2><span class="fan-ico">✦</span> <span id="fanTitle">İki Kanat</span></h2>
+        <span class="fan-chev">▾</span>
+      </div>
+      <div class="fan-body">
+        <p class="fan-motto" id="fanMotto"></p>
+        <div class="fan-wings">
+          <div class="wing"><h3 class="wing-title"><span>✶</span> <span id="fanLeftTitle"></span></h3><div id="fanLeft"></div></div>
+          <div class="wing"><h3 class="wing-title"><span>⚛</span> <span id="fanRightTitle"></span></h3><div id="fanRight"></div></div>
+        </div>
+      </div>
+    </section>
 
     <footer class="footer">
       <p>© 2026 Ergün Özsoy • YAMA Time Traveling</p>
@@ -1077,6 +1109,19 @@ async function beginTimeTravel() {
       document.querySelectorAll(".lang-btn").forEach(b=>{
         b.classList.toggle("active", b.getAttribute("data-lang")===lang);
       });
+      if(typeof renderFan==="function") renderFan();
+    }
+    const FAN = {"tr": {"title": "İki Kanat — Zamanda Yolculuk", "motto": "Bir kanat ilham, öteki akıl ve mantık; kuş tek kanatla uçamaz — ikisi birlikte çırpındığında zamanda yükseliriz.", "leftTitle": "İlham · kim neler hayal etti", "rightTitle": "Akıl & Mantık · kim neler hesap etti", "left": [{"n": "H. G. Wells — Zaman Makinesi", "y": "1895", "d": "Zamanı, bir makineyle gezilebilen 'dördüncü boyut' olarak kurgulayan ilk büyük eser."}, {"n": "Marcel Proust — Kayıp Zamanın İzinde", "y": "1913", "d": "Bir ısırık kurabiye bütün bir geçmişi geri çağırır — hafıza, en eski zaman makinesi."}, {"n": "Borges — Yolları Çatallanan Bahçe", "y": "1941", "d": "Zaman tek bir nehir değil, sonsuz çatallanan patikalardır — paralel zamanların edebî çekirdeği."}, {"n": "Ray Bradbury — Gök Gürültüsü Sesi", "y": "1952", "d": "Geçmişte ezilen bir kelebek geleceği değiştirir — 'kelebek etkisi'nin atası."}, {"n": "Geleceğe Dönüş", "y": "1985", "d": "Zaman yolculuğunu bir halk efsanesine dönüştüren, sinemanın en sevilen DeLorean'ı."}], "right": [{"n": "Einstein — Özel Görelilik", "y": "1905", "d": "Hızlı giden saat yavaş işler ('zaman genişlemesi'); zaman herkes için aynı akmaz."}, {"n": "Einstein — Genel Görelilik", "y": "1915", "d": "Kütle uzay-zamanı büker; güçlü çekimde zaman yavaşlar — geleceğe yolculuk fizikçe gerçektir."}, {"n": "Kurt Gödel", "y": "1949", "d": "Einstein denklemlerinde, geçmişe dönülebilen 'kapalı zaman eğrileri' içeren bir evren çözümü buldu."}, {"n": "Morris & Thorne", "y": "1988", "d": "Geçilebilir solucan delikleri — uzay-zamanın iki noktasını birleştiren kuramsal tüneller."}, {"n": "GPS uyduları", "y": "bugün", "d": "Görelilik her gün düzeltilir; yapılmasa GPS günde ~10 km sapardı. Zaman genişlemesi cebinde çalışır."}]}, "de": {"title": "Zwei Flügel — Zeitreise", "motto": "Ein Flügel ist Inspiration, der andere Vernunft; mit nur einem Flügel fliegt kein Vogel — erst wenn beide zugleich schlagen, steigen wir durch die Zeit.", "leftTitle": "Inspiration · wer was erträumt hat", "rightTitle": "Vernunft & Logik · wer was berechnet hat", "left": [{"n": "H. G. Wells — Die Zeitmaschine", "y": "1895", "d": "Erste große Fiktion, die Zeit als befahrbare 'vierte Dimension' denkt."}, {"n": "Marcel Proust — Auf der Suche nach der verlorenen Zeit", "y": "1913", "d": "Ein Bissen Gebäck ruft die ganze Vergangenheit zurück — Erinnerung als älteste Zeitmaschine."}, {"n": "Borges — Der Garten der Pfade, die sich verzweigen", "y": "1941", "d": "Zeit ist kein einzelner Fluss, sondern unendlich verzweigte Pfade — der Keim paralleler Zeiten."}, {"n": "Ray Bradbury — Ferner Donner", "y": "1952", "d": "Ein zertretener Schmetterling verändert die Zukunft — Urahn des 'Schmetterlingseffekts'."}, {"n": "Zurück in die Zukunft", "y": "1985", "d": "Der geliebteste DeLorean des Kinos, der Zeitreise zum Volksmythos machte."}], "right": [{"n": "Einstein — Spezielle Relativität", "y": "1905", "d": "Bewegte Uhren gehen langsamer ('Zeitdilatation'); Zeit verläuft nicht für alle gleich."}, {"n": "Einstein — Allgemeine Relativität", "y": "1915", "d": "Masse krümmt die Raumzeit; bei starker Gravitation vergeht Zeit langsamer — Reisen in die Zukunft ist real."}, {"n": "Kurt Gödel", "y": "1949", "d": "Fand eine Lösung der Einstein-Gleichungen mit 'geschlossenen zeitartigen Kurven' — eine Rückkehr in die Vergangenheit."}, {"n": "Morris & Thorne", "y": "1988", "d": "Durchquerbare Wurmlöcher — theoretische Tunnel zwischen zwei Punkten der Raumzeit."}, {"n": "GPS-Satelliten", "y": "heute", "d": "Relativität wird täglich korrigiert; ohne sie driftete GPS ~10 km pro Tag. Zeitdilatation in deiner Tasche."}]}, "en": {"title": "Two Wings — Time Travel", "motto": "One wing is inspiration, the other reason; no bird flies on a single wing — only when both beat together do we rise through time.", "leftTitle": "Inspiration · who imagined what", "rightTitle": "Reason & Logic · who computed what", "left": [{"n": "H. G. Wells — The Time Machine", "y": "1895", "d": "The first great fiction to imagine time as a 'fourth dimension' you can travel by machine."}, {"n": "Marcel Proust — In Search of Lost Time", "y": "1913", "d": "A bite of a madeleine summons the whole past — memory as the oldest time machine."}, {"n": "Borges — The Garden of Forking Paths", "y": "1941", "d": "Time is not one river but infinitely branching paths — the literary seed of parallel timelines."}, {"n": "Ray Bradbury — A Sound of Thunder", "y": "1952", "d": "A butterfly crushed in the past rewrites the future — ancestor of the 'butterfly effect'."}, {"n": "Back to the Future", "y": "1985", "d": "Cinema's most beloved DeLorean, which turned time travel into popular myth."}], "right": [{"n": "Einstein — Special Relativity", "y": "1905", "d": "Moving clocks run slow ('time dilation'); time does not flow the same for everyone."}, {"n": "Einstein — General Relativity", "y": "1915", "d": "Mass curves spacetime; time slows in strong gravity — travel to the future is physically real."}, {"n": "Kurt Gödel", "y": "1949", "d": "Found a solution to Einstein's equations with 'closed timelike curves' — a return to the past."}, {"n": "Morris & Thorne", "y": "1988", "d": "Traversable wormholes — theoretical tunnels linking two points in spacetime."}, {"n": "GPS satellites", "y": "today", "d": "Relativity is corrected daily; without it GPS would drift ~10 km/day. Time dilation in your pocket."}]}};
+    function renderFan(){
+      const f = (typeof FAN!=="undefined" && FAN[currentLang]) ? FAN[currentLang] : (typeof FAN!=="undefined" ? FAN.en : null);
+      if(!f) return;
+      const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+      set("fanTitle", f.title); set("fanMotto", f.motto);
+      set("fanLeftTitle", f.leftTitle); set("fanRightTitle", f.rightTitle);
+      const item = it => '<div class="wing-item"><span class="wi-name">'+it.n+'</span><span class="wi-year">('+it.y+')</span><span class="wi-desc">'+it.d+'</span></div>';
+      const L=document.getElementById("fanLeft"), R=document.getElementById("fanRight");
+      if(L) L.innerHTML = f.left.map(item).join("");
+      if(R) R.innerHTML = f.right.map(item).join("");
     }
     (function(){ let s="tr"; try{ s = localStorage.getItem("yama_tt_lang") || "tr"; }catch(e){} setLang(s); })();
     // ---- Geçmiş galerisi (localStorage) ----
