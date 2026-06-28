@@ -509,9 +509,20 @@
       border-top: 1px solid var(--border-color);
       margin-top: 80px;
     }
+
+    /* ---- Dil değiştirici ---- */
+    .lang-switch{position:fixed;top:14px;right:16px;display:flex;gap:6px;z-index:1000;}
+    .lang-btn{font-family:var(--font-sans);font-size:.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-secondary);background:rgba(20,27,43,.72);border:1px solid var(--border-color);border-radius:999px;padding:5px 11px;cursor:pointer;backdrop-filter:blur(4px);transition:all .2s;}
+    .lang-btn:hover{color:var(--text-primary);border-color:var(--accent-gold);}
+    .lang-btn.active{color:#0b0f19;background:var(--accent-gold);border-color:var(--accent-gold);}
   </style>
 </head>
 <body>
+  <div class="lang-switch" role="group" aria-label="Language">
+    <button class="lang-btn" data-lang="tr" onclick="setLang('tr')">TR</button>
+    <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
 
   <div class="container">
     
@@ -531,8 +542,8 @@
         </svg>
       </div>
       <h1 class="title">YAMA Time Traveling</h1>
-      <p class="subtitle">Explore possible stories hidden in historic photographs</p>
-      <p class="intro">Upload a historic photograph and explore the possible people, places, objects, atmosphere, and context it may reveal.</p>
+      <p class="subtitle" data-i18n="subtitle">Explore possible stories hidden in historic photographs</p>
+      <p class="intro" data-i18n="intro">Upload a historic photograph and explore the possible people, places, objects, atmosphere, and context it may reveal.</p>
     </header>
 
     <!-- Upload Section -->
@@ -544,8 +555,8 @@
           <svg class="upload-icon" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
           </svg>
-          <p class="upload-title">Drag & Drop Your Photograph</p>
-          <p class="upload-subtitle">or click to browse local files (JPG, PNG, WebP)</p>
+          <p class="upload-title" data-i18n="uploadTitle">Drag & Drop Your Photograph</p>
+          <p class="upload-subtitle" data-i18n="uploadSubtitle">or click to browse local files (JPG, PNG, WebP)</p>
         </div>
 
         <div class="preview-container" id="previewContainer" style="display: none;">
@@ -559,12 +570,12 @@
       <!-- Action Area -->
       <div class="action-container">
         <button id="timeTravelBtn" class="btn-primary" onclick="beginTimeTravel()" disabled>
-          <span>Begin Time Travel</span>
+          <span data-i18n="beginBtn">Begin Time Travel</span>
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
           </svg>
         </button>
-        <button id="changePhotoBtn" class="btn-secondary" style="display: none;">Select Different Photograph</button>
+        <button id="changePhotoBtn" class="btn-secondary" style="display: none;" data-i18n="changeBtn">Select Different Photograph</button>
       </div>
     </div>
 
@@ -573,7 +584,7 @@
       
       <div class="section-divider">
         <div class="line"></div>
-        <span class="divider-text">Temporal Analysis Report</span>
+        <span class="divider-text" data-i18n="reportTitle">Temporal Analysis Report</span>
         <div class="line"></div>
       </div>
 
@@ -588,7 +599,7 @@
                 <circle cx="12" cy="12" r="3"></circle>
               </svg>
             </div>
-            <h3>1. Observe</h3>
+            <h3 data-i18n="s1">1. Observe</h3>
           </div>
           <div class="card-content" id="observeContent">
             <!-- Dynamic placeholder -->
@@ -604,7 +615,7 @@
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
               </svg>
             </div>
-            <h3>2. Decode</h3>
+            <h3 data-i18n="s2">2. Decode</h3>
           </div>
           <div class="card-content" id="decodeContent">
             <!-- Dynamic placeholder -->
@@ -621,7 +632,7 @@
                 <polyline points="2 12 12 17 22 12"></polyline>
               </svg>
             </div>
-            <h3>3. Reconstruct</h3>
+            <h3 data-i18n="s3">3. Reconstruct</h3>
           </div>
           <div class="card-content" id="reconstructContent">
             <!-- Dynamic placeholder -->
@@ -644,7 +655,7 @@
                 <path d="M7.76 7.76l1.42 1.42"></path>
               </svg>
             </div>
-            <h3>4. Atmosphere</h3>
+            <h3 data-i18n="s4">4. Atmosphere</h3>
           </div>
           <div class="card-content" id="atmosphereContent">
             <!-- Dynamic placeholder -->
@@ -660,7 +671,7 @@
                 <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
               </svg>
             </div>
-            <h3>5. Time Travel Narrative</h3>
+            <h3 data-i18n="s5">5. Time Travel Narrative</h3>
           </div>
           <div class="card-content" id="narrativeContent">
             <!-- Dynamic placeholder -->
@@ -675,7 +686,7 @@
                 <path d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
               </svg>
             </div>
-            <h3>6. Historian Mode</h3>
+            <h3 data-i18n="s6">6. Historian Mode</h3>
           </div>
           <div class="card-content" id="historianContent">
             <!-- Dynamic placeholder -->
@@ -891,12 +902,12 @@
       
       historianContent.innerHTML = `
         <div class="historian-section">
-          <div class="historian-subtitle">What we know</div>
+          <div class="historian-subtitle">${t('hKnow')}</div>
           <div class="skeleton-line"></div>
           <div class="skeleton-line short"></div>
         </div>
         <div class="historian-section" style="margin-top: 20px;">
-          <div class="historian-subtitle">What we do not know</div>
+          <div class="historian-subtitle">${t('hNotKnow')}</div>
           <div class="skeleton-line"></div>
           <div class="skeleton-line short"></div>
         </div>
@@ -906,7 +917,7 @@
     // Bir metnin ilk cümlesini ayırır (kısaltmalara karşı min. uzunluk koruması)
     function splitFirstSentence(text) {
       const t = (text || '').trim();
-      const m = t.match(/^([\s\S]{25,}?[.!?])\s+(?=[A-ZÄÖÜ"„'])/);
+      const m = t.match(/^([\s\S]{25,}?[.!?])\s+(?=[A-ZÄÖÜÇĞİŞ"„'])/);
       if (m) return [m[1].trim(), t.slice(m[0].length).trim()];
       return [t, ''];
     }
@@ -955,15 +966,15 @@
       // 6. Historian Mode – three clearly separated sections
       historianContent.innerHTML = `
         <div class="historian-section">
-          <div class="historian-subtitle">What we observe</div>
+          <div class="historian-subtitle">${t('hObserve')}</div>
           <p>${data.historianMode.observe}</p>
         </div>
         <div class="historian-section">
-          <div class="historian-subtitle">What we can infer</div>
+          <div class="historian-subtitle">${t('hInfer')}</div>
           <p>${data.historianMode.infer}</p>
         </div>
         <div class="historian-section">
-          <div class="historian-subtitle">What we cannot know</div>
+          <div class="historian-subtitle">${t('hCannot')}</div>
           <p>${data.historianMode.unknown}</p>
         </div>
       `;
@@ -974,7 +985,7 @@ async function beginTimeTravel() {
     const fileInput = document.getElementById("photoInput") || document.querySelector('input[type="file"]');
     
     if (!fileInput || !fileInput.files[0]) {
-        alert("Lütfen önce bir fotoğraf yükleyin!");
+        alert(t("noPhoto"));
         return;
     }
 
@@ -986,6 +997,7 @@ async function beginTimeTravel() {
     // Fotoğrafı paketleyip sunucuya göndermek için hazırlıyoruz
     const formData = new FormData();
     formData.append("photo", fileInput.files[0]);
+        formData.append("lang", currentLang);
 
     try {
         // server.js üzerindeki canlı API ucumuza resmi gönderiyoruz
@@ -1003,9 +1015,49 @@ async function beginTimeTravel() {
 
     } catch (error) {
         console.error("Zaman yolculuğu hatası:", error);
-        alert("Zaman akışında bir kopma yaşandı! Sunucu terminalini veya API anahtarınızı kontrol edin.");
+        alert(t("error"));
     }
 }
+    // ---- Çok dilli arayüz (TR / DE / EN) ----
+    const I18N = {
+      tr: { subtitle:"Tarihî fotoğraflarda gizli olası hikâyeleri keşfet",
+        intro:"Tarihî bir fotoğraf yükle; içindeki olası insanları, mekânları, nesneleri, atmosferi ve bağlamı keşfet.",
+        uploadTitle:"Fotoğrafını Sürükle & Bırak", uploadSubtitle:"ya da yerel dosyalardan seç (JPG, PNG, WebP)",
+        beginBtn:"Zaman Yolculuğuna Başla", changeBtn:"Başka Fotoğraf Seç", reportTitle:"Zamansal Analiz Raporu",
+        s1:"1. Gözlem", s2:"2. Çözümleme", s3:"3. Yeniden Kurgu", s4:"4. Atmosfer", s5:"5. Zaman Yolculuğu Anlatısı", s6:"6. Tarihçi Modu",
+        hKnow:"Bildiğimiz", hNotKnow:"Bilmediğimiz", hObserve:"Gözlemlediğimiz", hInfer:"Çıkarabildiğimiz", hCannot:"Bilemeyeceğimiz",
+        noPhoto:"Lütfen önce bir fotoğraf yükleyin!", error:"Zaman akışında bir kopma yaşandı! Lütfen biraz sonra tekrar dene." },
+      de: { subtitle:"Entdecke mögliche Geschichten in historischen Fotografien",
+        intro:"Lade eine historische Fotografie hoch und erkunde die möglichen Menschen, Orte, Objekte, Atmosphäre und den Kontext, die sie offenbaren kann.",
+        uploadTitle:"Foto hierher ziehen & ablegen", uploadSubtitle:"oder klicken, um lokale Dateien zu wählen (JPG, PNG, WebP)",
+        beginBtn:"Zeitreise beginnen", changeBtn:"Anderes Foto wählen", reportTitle:"Zeitanalyse-Bericht",
+        s1:"1. Beobachten", s2:"2. Entschlüsseln", s3:"3. Rekonstruieren", s4:"4. Atmosphäre", s5:"5. Zeitreise-Erzählung", s6:"6. Historiker-Modus",
+        hKnow:"Was wir wissen", hNotKnow:"Was wir nicht wissen", hObserve:"Was wir beobachten", hInfer:"Was wir erschließen können", hCannot:"Was wir nicht wissen können",
+        noPhoto:"Bitte zuerst ein Foto hochladen!", error:"Im Zeitstrom gab es einen Bruch! Bitte versuche es später erneut." },
+      en: { subtitle:"Explore possible stories hidden in historic photographs",
+        intro:"Upload a historic photograph and explore the possible people, places, objects, atmosphere, and context it may reveal.",
+        uploadTitle:"Drag & Drop Your Photograph", uploadSubtitle:"or click to browse local files (JPG, PNG, WebP)",
+        beginBtn:"Begin Time Travel", changeBtn:"Select Different Photograph", reportTitle:"Temporal Analysis Report",
+        s1:"1. Observe", s2:"2. Decode", s3:"3. Reconstruct", s4:"4. Atmosphere", s5:"5. Time Travel Narrative", s6:"6. Historian Mode",
+        hKnow:"What we know", hNotKnow:"What we do not know", hObserve:"What we observe", hInfer:"What we can infer", hCannot:"What we cannot know",
+        noPhoto:"Please upload a photograph first!", error:"There was a rupture in the time stream! Please try again shortly." }
+    };
+    let currentLang = "tr";
+    function t(k){ return (I18N[currentLang] && I18N[currentLang][k]) || (I18N.en[k] || k); }
+    function setLang(lang){
+      if(!I18N[lang]) lang = "tr";
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      try { localStorage.setItem("yama_tt_lang", lang); } catch(e){}
+      document.querySelectorAll("[data-i18n]").forEach(el=>{
+        const k = el.getAttribute("data-i18n");
+        if(I18N[lang][k] !== undefined) el.textContent = I18N[lang][k];
+      });
+      document.querySelectorAll(".lang-btn").forEach(b=>{
+        b.classList.toggle("active", b.getAttribute("data-lang")===lang);
+      });
+    }
+    (function(){ let s="tr"; try{ s = localStorage.getItem("yama_tt_lang") || "tr"; }catch(e){} setLang(s); })();
 </script>
 
 </body>
