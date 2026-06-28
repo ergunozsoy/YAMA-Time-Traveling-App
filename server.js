@@ -65,6 +65,9 @@ Analyze the uploaded historical photograph layer by layer using strict historiog
 6. Historian Mindset: Separate what is directly observable, what can be inferred, and what cannot be known.
 Always deliver your complete analysis via the deliver_analysis tool.`;
 
+// Analiz çıktısının dili (frontend'den 'lang' alanı ile gelir)
+const LANG_NAMES = { tr: "Turkish", de: "German", en: "English" };
+
 // Frontend'den gelen resmi karşılayan ve Claude'a gönderen API Ucu
 app.post("/api/analyze", upload.single("photo"), async (req, res) => {
   try {
@@ -75,10 +78,20 @@ app.post("/api/analyze", upload.single("photo"), async (req, res) => {
 
     console.log(`[BİLGİ] Fotoğraf alındı (${req.file.mimetype}). Claude API'sine gönderiliyor...`);
 
+    // Seçilen dil (varsayılan: İngilizce). Analizin TÜM metni bu dilde üretilir.
+    const lang = (req.body && req.body.lang) || "en";
+    const langName = LANG_NAMES[lang] || "English";
+    const localizedSystem = systemPrompt +
+      `\n\nLANGUAGE REQUIREMENT: Write ALL textual content of every field ` +
+      `(observe, decode, reconstruct, atmosphere, narrative, and every historianMode field) ` +
+      `entirely in ${langName}, using natural and fluent ${langName}. ` +
+      `Do NOT use any other language in the output. ` +
+      `Keep the JSON structure, the tool name, and all field/key names exactly as defined (in English).`;
+
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 4096,
-      system: systemPrompt,
+      system: localizedSystem,
       tools: [
         {
           name: "deliver_analysis",
