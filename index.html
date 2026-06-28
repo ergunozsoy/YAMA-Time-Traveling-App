@@ -396,6 +396,41 @@
       margin-bottom: 0;
     }
 
+    /* ---- Gazete tarzı analiz görünümü ---- */
+    .card-content .lede {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;          /* manşet: gövdeden belirgin büyük */
+      font-weight: 700;
+      line-height: 1.28;
+      color: var(--text-primary);
+      margin: 0 0 18px 0;
+      letter-spacing: 0.2px;
+    }
+    .card-content .lede::after {  /* manşet altı ince altın çizgi */
+      content: '';
+      display: block;
+      width: 40px;
+      height: 2px;
+      background: var(--accent-gold);
+      margin-top: 12px;
+      border-radius: 2px;
+    }
+    .card-content .body p { margin: 0 0 15px 0; }
+    .card-content .body p:last-child { margin-bottom: 0; }
+    .card-content .body .runin {  /* paragraf başı bold ara-vurgu */
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    .card-content .body p.dropcap::first-letter {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 3.1rem;
+      line-height: 0.8;
+      float: left;
+      margin: 6px 10px 0 0;
+      color: var(--accent-gold);
+    }
+
     .narrative-text {
       font-style: italic;
       position: relative;
@@ -868,19 +903,51 @@
       `;
     }
 
+    // Bir metnin ilk cümlesini ayırır (kısaltmalara karşı min. uzunluk koruması)
+    function splitFirstSentence(text) {
+      const t = (text || '').trim();
+      const m = t.match(/^([\s\S]{25,}?[.!?])\s+(?=[A-ZÄÖÜ"„'])/);
+      if (m) return [m[1].trim(), t.slice(m[0].length).trim()];
+      return [t, ''];
+    }
+
+    // Paragraf dizisini gazete mantığıyla biçimlendirir:
+    // manşet (ilk vurucu cümle) + drop-cap'li giriş + paragraf başı bold ara-vurgular
+    function newspaper(paragraphs) {
+      if (!paragraphs || !paragraphs.length) return '';
+      const [lede, firstRest] = splitFirstSentence(paragraphs[0]);
+      let html = `<div class="lede">${lede}</div>`;
+      const body = [];
+      if (firstRest) body.push(firstRest);
+      for (let i = 1; i < paragraphs.length; i++) body.push(paragraphs[i]);
+      html += '<div class="body">';
+      body.forEach((para, idx) => {
+        if (idx === 0) {
+          html += `<p class="dropcap">${para}</p>`;
+        } else {
+          const [lead, rest] = splitFirstSentence(para);
+          html += rest
+            ? `<p><span class="runin">${lead}</span> ${rest}</p>`
+            : `<p><span class="runin">${lead}</span></p>`;
+        }
+      });
+      html += '</div>';
+      return html;
+    }
+
     // Populate actual data into the DOM (called after loading delay or future API response)
     function renderAnalysis(data) {
       // 1. Observe
-      observeContent.innerHTML = data.observe.map(p => `<p>${p}</p>`).join('');
+      observeContent.innerHTML = newspaper(data.observe);
 
       // 2. Decode
-      decodeContent.innerHTML = data.decode.map(p => `<p>${p}</p>`).join('');
+      decodeContent.innerHTML = newspaper(data.decode);
 
       // 3. Reconstruct
-      reconstructContent.innerHTML = data.reconstruct.map(p => `<p>${p}</p>`).join('');
+      reconstructContent.innerHTML = newspaper(data.reconstruct);
 
       // 4. Atmosphere
-      atmosphereContent.innerHTML = data.atmosphere.map(p => `<p>${p}</p>`).join('');
+      atmosphereContent.innerHTML = newspaper(data.atmosphere);
 
       // 5. Time Travel Narrative
       narrativeContent.innerHTML = `<p class="narrative-text">${data.narrative}</p>`;
