@@ -515,6 +515,18 @@
     .lang-btn{font-family:var(--font-sans);font-size:.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-secondary);background:rgba(20,27,43,.72);border:1px solid var(--border-color);border-radius:999px;padding:5px 11px;cursor:pointer;backdrop-filter:blur(4px);transition:all .2s;}
     .lang-btn:hover{color:var(--text-primary);border-color:var(--accent-gold);}
     .lang-btn.active{color:#0b0f19;background:var(--accent-gold);border-color:var(--accent-gold);}
+
+    /* ---- Geçmiş galerisi ---- */
+    .history-bar{max-width:1100px;margin:46px auto 0;padding:0 20px;}
+    .history-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .history-title{font-family:var(--font-serif);color:var(--accent-gold);letter-spacing:2px;text-transform:uppercase;font-size:.85rem;}
+    .history-clear{font-family:var(--font-sans);font-size:.72rem;color:var(--text-secondary);background:transparent;border:1px solid var(--border-color);border-radius:999px;padding:5px 12px;cursor:pointer;transition:all .2s;}
+    .history-clear:hover{color:var(--text-primary);border-color:var(--accent-gold);}
+    .history-strip{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;}
+    .hist-thumb{position:relative;flex:0 0 auto;width:84px;height:84px;border-radius:10px;overflow:hidden;border:1px solid var(--border-color);cursor:pointer;transition:all .2s;}
+    .hist-thumb:hover{border-color:var(--accent-gold);transform:translateY(-2px);}
+    .hist-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+    .hist-thumb .hist-lang{position:absolute;bottom:4px;right:4px;font-size:.6rem;font-weight:700;letter-spacing:.04em;color:#0b0f19;background:var(--accent-gold);border-radius:4px;padding:1px 4px;}
   </style>
 </head>
 <body>
@@ -697,6 +709,14 @@
     </div>
 
     <!-- Footer -->
+    <div class="history-bar" id="historyBar" style="display:none;">
+      <div class="history-head">
+        <span class="history-title" data-i18n="historyTitle">Geçmiş</span>
+        <button class="history-clear" data-i18n="clearHistory" onclick="clearHistory()">Temizle</button>
+      </div>
+      <div class="history-strip" id="historyStrip"></div>
+    </div>
+
     <footer class="footer">
       <p>© 2026 Ergün Özsoy • YAMA Time Traveling</p>
     </footer>
@@ -1012,6 +1032,7 @@ async function beginTimeTravel() {
         
         // Gemini'dan dönen gerçek, canlı tarihsel veriyi ekrana basıyoruz
         renderAnalysis(result);
+        addHistory(fileInput.files[0], result);
 
     } catch (error) {
         console.error("Zaman yolculuğu hatası:", error);
@@ -1026,21 +1047,21 @@ async function beginTimeTravel() {
         beginBtn:"Zaman Yolculuğuna Başla", changeBtn:"Başka Fotoğraf Seç", reportTitle:"Zamansal Analiz Raporu",
         s1:"1. Gözlem", s2:"2. Çözümleme", s3:"3. Yeniden Kurgu", s4:"4. Atmosfer", s5:"5. Zaman Yolculuğu Anlatısı", s6:"6. Tarihçi Modu",
         hKnow:"Bildiğimiz", hNotKnow:"Bilmediğimiz", hObserve:"Gözlemlediğimiz", hInfer:"Çıkarabildiğimiz", hCannot:"Bilemeyeceğimiz",
-        noPhoto:"Lütfen önce bir fotoğraf yükleyin!", error:"Zaman akışında bir kopma yaşandı! Lütfen biraz sonra tekrar dene." },
+        noPhoto:"Lütfen önce bir fotoğraf yükleyin!", error:"Zaman akışında bir kopma yaşandı! Lütfen biraz sonra tekrar dene.", historyTitle:"Geçmiş", clearHistory:"Temizle" },
       de: { subtitle:"Entdecke mögliche Geschichten in historischen Fotografien",
         intro:"Lade eine historische Fotografie hoch und erkunde die möglichen Menschen, Orte, Objekte, Atmosphäre und den Kontext, die sie offenbaren kann.",
         uploadTitle:"Foto hierher ziehen & ablegen", uploadSubtitle:"oder klicken, um lokale Dateien zu wählen (JPG, PNG, WebP)",
         beginBtn:"Zeitreise beginnen", changeBtn:"Anderes Foto wählen", reportTitle:"Zeitanalyse-Bericht",
         s1:"1. Beobachten", s2:"2. Entschlüsseln", s3:"3. Rekonstruieren", s4:"4. Atmosphäre", s5:"5. Zeitreise-Erzählung", s6:"6. Historiker-Modus",
         hKnow:"Was wir wissen", hNotKnow:"Was wir nicht wissen", hObserve:"Was wir beobachten", hInfer:"Was wir erschließen können", hCannot:"Was wir nicht wissen können",
-        noPhoto:"Bitte zuerst ein Foto hochladen!", error:"Im Zeitstrom gab es einen Bruch! Bitte versuche es später erneut." },
+        noPhoto:"Bitte zuerst ein Foto hochladen!", error:"Im Zeitstrom gab es einen Bruch! Bitte versuche es später erneut.", historyTitle:"Verlauf", clearHistory:"Leeren" },
       en: { subtitle:"Explore possible stories hidden in historic photographs",
         intro:"Upload a historic photograph and explore the possible people, places, objects, atmosphere, and context it may reveal.",
         uploadTitle:"Drag & Drop Your Photograph", uploadSubtitle:"or click to browse local files (JPG, PNG, WebP)",
         beginBtn:"Begin Time Travel", changeBtn:"Select Different Photograph", reportTitle:"Temporal Analysis Report",
         s1:"1. Observe", s2:"2. Decode", s3:"3. Reconstruct", s4:"4. Atmosphere", s5:"5. Time Travel Narrative", s6:"6. Historian Mode",
         hKnow:"What we know", hNotKnow:"What we do not know", hObserve:"What we observe", hInfer:"What we can infer", hCannot:"What we cannot know",
-        noPhoto:"Please upload a photograph first!", error:"There was a rupture in the time stream! Please try again shortly." }
+        noPhoto:"Please upload a photograph first!", error:"There was a rupture in the time stream! Please try again shortly.", historyTitle:"History", clearHistory:"Clear" }
     };
     let currentLang = "tr";
     function t(k){ return (I18N[currentLang] && I18N[currentLang][k]) || (I18N.en[k] || k); }
@@ -1058,6 +1079,57 @@ async function beginTimeTravel() {
       });
     }
     (function(){ let s="tr"; try{ s = localStorage.getItem("yama_tt_lang") || "tr"; }catch(e){} setLang(s); })();
+    // ---- Geçmiş galerisi (localStorage) ----
+    const HISTORY_KEY = "yama_tt_history";
+    const HISTORY_MAX = 12;
+    function loadHistory(){ try{ return JSON.parse(localStorage.getItem(HISTORY_KEY)||"[]"); }catch(e){ return []; } }
+    function persistHistory(arr){
+      for(let n=arr.length; n>=1; n--){
+        try{ localStorage.setItem(HISTORY_KEY, JSON.stringify(arr.slice(0,n))); return; }catch(e){}
+      }
+      try{ localStorage.removeItem(HISTORY_KEY); }catch(e){}
+    }
+    function makeThumb(file, max){
+      return new Promise((resolve)=>{
+        const fr=new FileReader();
+        fr.onload=()=>{ const img=new Image();
+          img.onload=()=>{ const s=Math.min(max/img.width, max/img.height, 1);
+            const w=Math.max(1,Math.round(img.width*s)), h=Math.max(1,Math.round(img.height*s));
+            const c=document.createElement("canvas"); c.width=w; c.height=h;
+            c.getContext("2d").drawImage(img,0,0,w,h);
+            resolve(c.toDataURL("image/jpeg",0.62)); };
+          img.onerror=()=>resolve(null); img.src=fr.result; };
+        fr.onerror=()=>resolve(null); fr.readAsDataURL(file);
+      });
+    }
+    function addHistory(file, data){
+      if(!file) return;
+      makeThumb(file,200).then(thumb=>{ if(!thumb) return;
+        const arr=loadHistory();
+        arr.unshift({ id:Date.now(), thumb, data, lang:currentLang });
+        persistHistory(arr.slice(0,HISTORY_MAX));
+        renderHistory();
+      });
+    }
+    function openHistory(id){
+      const it=loadHistory().find(x=>x.id===id); if(!it) return;
+      const prev=document.getElementById("preview"); if(prev) prev.src=it.thumb;
+      renderAnalysis(it.data);
+      const a=document.getElementById("analysis");
+      if(a){ a.style.display="block"; a.scrollIntoView({behavior:"smooth",block:"start"}); }
+    }
+    function clearHistory(){ try{ localStorage.removeItem(HISTORY_KEY); }catch(e){} renderHistory(); }
+    function renderHistory(){
+      const bar=document.getElementById("historyBar"), strip=document.getElementById("historyStrip");
+      if(!bar||!strip) return;
+      const arr=loadHistory();
+      if(!arr.length){ bar.style.display="none"; return; }
+      bar.style.display="block";
+      strip.innerHTML = arr.map(it=>
+        `<div class="hist-thumb" onclick="openHistory(${it.id})" title="${new Date(it.id).toLocaleString()}"><img src="${it.thumb}" alt=""><span class="hist-lang">${(it.lang||"").toUpperCase()}</span></div>`
+      ).join("");
+    }
+    renderHistory();
 </script>
 
 </body>
